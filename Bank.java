@@ -40,47 +40,101 @@ public class Bank{
         return String.valueOf(p).length();
     }
 
-    public static void login(int p){
-        boolean validLogin = false;
+    public static void login(int p){    // Take in the pin (p)
+        boolean validLogin = false; // Assumes the login is false at the start
         while(!validLogin){
-            System.out.println("Enter your pin");
+            System.out.println("Enter your pin");   // Query for pin
             if(sc.hasNextInt()){
-                int candidate = sc.nextInt();
-                if(candidate==p){
+                int candidate = sc.nextInt();   // Potential pin
+                if(candidate==p){   // Correct pin!
                     System.out.println("Login successful");
-                    validLogin = true;
+                    validLogin = true;  // Breaks out of loop
                 }
                 else{
-                    System.out.println("Wrong pin");
+                    System.out.println("Wrong pin");    // Wrong pin
                 }
             }
             else{
-                System.out.println("Please enter a 4-digit pin");
+                System.out.println("Please enter a 4-digit pin");   // If user inputs a non-int pin
                 sc.next();
             }
         }
         loggedIn = true;
     }
     
-    public static void showBalance(boolean loggedIn){
-        if(loggedIn==false){
+    public static void showBalance(boolean loggedIn){   // Only works if user is logged in
+        if(loggedIn==false){ 
             System.out.println("You must be logged in to view your balance");
         }
         else{
-            System.out.println("Your balance is: "+balance);
+            System.out.println("Your balance is: "+balance);    // Simply displays the balance
         } 
     }
 
-    public static double deposit(double dp){
-        balance+=dp;
-        return balance;
+    public static double deposit(double dp){    // Takes in desired deposit amount
+        balance+=dp;    // Add the deposit value to the balance
+        return balance; // Return the new balance
     }
 
+    public static double withdraw(double wd){   // Takes in desired withdrawal amount
+        if(wd>balance){ // If the withdrawal is higher than the balance, error
+            System.out.println("Cannot withdraw more than you have!");
+        }
+        else{
+            balance-=wd;    // Subtract the withdrawal value from the balance
+        }
+        return balance; // Return the new balance
+    }
+
+    public static void calculateInterest() {
+    System.out.println("How many years will you leave the money invested?");
+    if(sc.hasNextInt()) {
+        int years = sc.nextInt();
+        double rate = 0.05; // 5% Interest Rate (Econ 001 dreams!)
+        
+        // A = P(1 + r)^t
+        double futureValue = balance * Math.pow((1 + rate), years);
+        
+        System.out.printf("At 5%% interest, in %d years you will have: $%.2f\n", years, futureValue);
+    } else {
+        sc.next(); // Clear bad input
+    }
+}
+
     public static void main(String[]args){   
+        boolean using = true;
+        
         System.out.println("\nWelcome to Temulen's Bank!\n");
         int pin = createPin();
         login(pin);
         showBalance(loggedIn);
-        
+        while(using){
+            System.out.println("Would you like to deposit or withdraw? (1-Deposit, 2-Withdraw, 3-Calculate Interest)");
+            int decision = sc.nextInt();
+            if(decision==1){
+                System.out.println("How much would you like to deposit?");
+                double dpamount = sc.nextDouble();
+                deposit(dpamount);
+            }
+            else if(decision==2){
+                System.out.println("How much would you like to withdraw?");
+                double wdamount = sc.nextDouble();
+                withdraw(wdamount);
+            }
+            else if(decision==3){
+                calculateInterest();
+            }
+            System.out.println("You now have "+balance);
+            System.out.println("Would you like to continue? (1-Yes, 2-No)");
+            int decision2 = sc.nextInt();
+            if(decision2==1){
+                using = true;
+            }
+            if(decision2==2){
+                System.out.println("Thank you for using Temulen's Bank!");
+                using = false;
+            }
+        }
+    sc.close(); // Close the scanner
     }
 }
